@@ -37,9 +37,13 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 
+import com.crashlytics.android.Crashlytics;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * Extended logger. Allows you to automatically adequately logged class, method and line call in the log. Makes it easy to write logs. For
@@ -52,12 +56,21 @@ public class Log {
     static volatile boolean isDisabled = false;
     static volatile boolean isLogOutlined = true;
     static volatile boolean isAlignNewLines = false;
+    private static  boolean isCrashlyticsDisabled = true;
     private static final String FRAGMENT_STACK = "FRAGMENT STACK [";
     private static volatile Application.ActivityLifecycleCallbacks activityLifecycleCallback = null;
     private static volatile HashMap<String, FragmentManager.FragmentLifecycleCallbacks> fragmentLifecycleCallbacks = new HashMap<>();
     private static volatile HashMap<String, android.support.v4.app.FragmentManager.FragmentLifecycleCallbacks> supportFragmentLifecycleCallbacks = new HashMap<>();
 
     private Log() {
+    }
+
+    public static void useCrashlytics(boolean useCrashlytics){
+        if (useCrashlytics && !Fabric.isInitialized()) {
+            Log.e("Error, must Initialize Fabric before using singleton()");
+            return;
+        }
+        isCrashlyticsDisabled=!useCrashlytics;
     }
 
     /**
@@ -254,6 +267,15 @@ public class Log {
     }
 
     /**
+     * Is Crashlytics logs disabled
+     *
+     * @return is disabled
+     */
+    public static boolean isCrashlyticsDisabled() {
+        return isCrashlyticsDisabled;
+    }
+
+    /**
      * Set logs disabled or enabled
      *
      * @param isDisabled is disabled
@@ -281,6 +303,9 @@ public class Log {
             return;
         }
         android.util.Log.v(Format.getTag(), Format.getFormattedMessage(message));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.VERBOSE,Format.getTag(), Format.getFormattedMessage(message));
+        }
     }
 
     /**
@@ -293,6 +318,9 @@ public class Log {
             return;
         }
         android.util.Log.d(Format.getTag(), Format.getFormattedMessage(message));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.DEBUG,Format.getTag(), Format.getFormattedMessage(message));
+        }
     }
 
     /**
@@ -305,6 +333,9 @@ public class Log {
             return;
         }
         android.util.Log.i(Format.getTag(), Format.getFormattedMessage(message));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.INFO,Format.getTag(), Format.getFormattedMessage(message));
+        }
     }
 
     /**
@@ -317,6 +348,9 @@ public class Log {
             return;
         }
         android.util.Log.w(Format.getTag(), Format.getFormattedMessage(message));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.WARN,Format.getTag(), Format.getFormattedMessage(message));
+        }
     }
 
     /**
@@ -329,6 +363,9 @@ public class Log {
             return;
         }
         android.util.Log.e(Format.getTag(), Format.getFormattedMessage(message));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.ERROR,Format.getTag(), Format.getFormattedMessage(message));
+        }
     }
 
     /**
@@ -343,6 +380,9 @@ public class Log {
             return;
         }
         android.util.Log.wtf(Format.getTag(), Format.getFormattedMessage(message));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.ASSERT,Format.getTag(), Format.getFormattedMessage(message));
+        }
     }
 
     // ==========================================================
@@ -358,6 +398,10 @@ public class Log {
             return;
         }
         android.util.Log.v(Format.getTag(), Format.getFormattedThrowable(message, tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.VERBOSE,Format.getTag(), Format.getFormattedMessage(message));
+            Crashlytics.logException(tr);
+        }
     }
 
     /**
@@ -371,6 +415,10 @@ public class Log {
             return;
         }
         android.util.Log.d(Format.getTag(), Format.getFormattedThrowable(message, tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.DEBUG,Format.getTag(), Format.getFormattedMessage(message));
+            Crashlytics.logException(tr);
+        }
     }
 
     /**
@@ -384,6 +432,10 @@ public class Log {
             return;
         }
         android.util.Log.i(Format.getTag(), Format.getFormattedThrowable(message, tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.INFO,Format.getTag(), Format.getFormattedMessage(message));
+            Crashlytics.logException(tr);
+        }
     }
 
     /**
@@ -397,6 +449,10 @@ public class Log {
             return;
         }
         android.util.Log.w(Format.getTag(), Format.getFormattedThrowable(message, tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.WARN,Format.getTag(), Format.getFormattedMessage(message));
+            Crashlytics.logException(tr);
+        }
     }
 
     /**
@@ -410,6 +466,10 @@ public class Log {
             return;
         }
         android.util.Log.e(Format.getTag(), Format.getFormattedThrowable(message, tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.ERROR,Format.getTag(), Format.getFormattedMessage(message));
+            Crashlytics.logException(tr);
+        }
     }
 
     /**
@@ -426,6 +486,10 @@ public class Log {
             return;
         }
         android.util.Log.e(Format.getTag(), Format.getFormattedThrowable(message, tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.ERROR,Format.getTag(), Format.getFormattedMessage(message));
+            Crashlytics.logException(tr);
+        }
     }
 
     /**
@@ -439,6 +503,10 @@ public class Log {
             return;
         }
         android.util.Log.wtf(Format.getTag(), Format.getFormattedThrowable(message, tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.ASSERT,Format.getTag(), Format.getFormattedMessage(message));
+            Crashlytics.logException(tr);
+        }
     }
 
     // ==========================================================
@@ -453,6 +521,9 @@ public class Log {
             return;
         }
         android.util.Log.v(Format.getTag(), Format.getFormattedThrowable(tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.logException(tr);
+        }
     }
 
     /**
@@ -465,6 +536,9 @@ public class Log {
             return;
         }
         android.util.Log.d(Format.getTag(), Format.getFormattedThrowable(tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.logException(tr);
+        }
     }
 
     /**
@@ -477,6 +551,9 @@ public class Log {
             return;
         }
         android.util.Log.i(Format.getTag(), Format.getFormattedThrowable(tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.logException(tr);
+        }
     }
 
     /**
@@ -489,6 +566,9 @@ public class Log {
             return;
         }
         android.util.Log.w(Format.getTag(), Format.getFormattedThrowable(tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.logException(tr);
+        }
     }
 
     /**
@@ -501,6 +581,9 @@ public class Log {
             return;
         }
         android.util.Log.e(Format.getTag(), Format.getFormattedThrowable(tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.logException(tr);
+        }
     }
 
     /**
@@ -516,6 +599,9 @@ public class Log {
             return;
         }
         android.util.Log.e(Format.getTag(), Format.getFormattedThrowable(tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.logException(tr);
+        }
     }
 
     /**
@@ -528,6 +614,9 @@ public class Log {
             return;
         }
         android.util.Log.wtf(Format.getTag(), Format.getFormattedThrowable(tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.logException(tr);
+        }
     }
 
     // ==========================================================
@@ -545,6 +634,9 @@ public class Log {
             return;
         }
         android.util.Log.v(Format.gatExtendedTag(obj), Format.getFormattedMessage(message));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.VERBOSE,Format.gatExtendedTag(obj), Format.getFormattedMessage(message));
+        }
     }
 
     /**
@@ -559,6 +651,9 @@ public class Log {
             return;
         }
         android.util.Log.d(Format.gatExtendedTag(obj), Format.getFormattedMessage(message));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.DEBUG,Format.gatExtendedTag(obj), Format.getFormattedMessage(message));
+        }
     }
 
     /**
@@ -573,6 +668,9 @@ public class Log {
             return;
         }
         android.util.Log.i(Format.gatExtendedTag(obj), Format.getFormattedMessage(message));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.INFO,Format.gatExtendedTag(obj), Format.getFormattedMessage(message));
+        }
     }
 
     /**
@@ -587,6 +685,9 @@ public class Log {
             return;
         }
         android.util.Log.w(Format.gatExtendedTag(obj), Format.getFormattedMessage(message));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.WARN,Format.gatExtendedTag(obj), Format.getFormattedMessage(message));
+        }
     }
 
     /**
@@ -602,6 +703,9 @@ public class Log {
             return;
         }
         android.util.Log.e(Format.gatExtendedTag(obj), Format.getFormattedMessage(message));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.ERROR,Format.gatExtendedTag(obj), Format.getFormattedMessage(message));
+        }
     }
 
     /**
@@ -617,6 +721,9 @@ public class Log {
             return;
         }
         android.util.Log.wtf(Format.gatExtendedTag(obj), Format.getFormattedMessage(message));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.ASSERT,Format.gatExtendedTag(obj), Format.getFormattedMessage(message));
+        }
     }
 
     // ==========================================================
@@ -635,6 +742,10 @@ public class Log {
             return;
         }
         android.util.Log.v(Format.gatExtendedTag(obj), Format.getFormattedThrowable(message, tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.VERBOSE,Format.gatExtendedTag(obj), Format.getFormattedMessage(message));
+            Crashlytics.logException(tr);
+        }
     }
 
     /**
@@ -651,6 +762,10 @@ public class Log {
             return;
         }
         android.util.Log.d(Format.gatExtendedTag(obj), Format.getFormattedThrowable(message, tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.DEBUG,Format.gatExtendedTag(obj), Format.getFormattedMessage(message));
+            Crashlytics.logException(tr);
+        }
     }
 
     /**
@@ -667,6 +782,10 @@ public class Log {
             return;
         }
         android.util.Log.i(Format.gatExtendedTag(obj), Format.getFormattedThrowable(message, tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.INFO,Format.gatExtendedTag(obj), Format.getFormattedMessage(message));
+            Crashlytics.logException(tr);
+        }
     }
 
     /**
@@ -683,6 +802,10 @@ public class Log {
             return;
         }
         android.util.Log.w(Format.gatExtendedTag(obj), Format.getFormattedThrowable(message, tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.WARN,Format.gatExtendedTag(obj), Format.getFormattedMessage(message));
+            Crashlytics.logException(tr);
+        }
     }
 
     /**
@@ -699,6 +822,10 @@ public class Log {
             return;
         }
         android.util.Log.e(Format.gatExtendedTag(obj), Format.getFormattedThrowable(message, tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.ERROR,Format.gatExtendedTag(obj), Format.getFormattedMessage(message));
+            Crashlytics.logException(tr);
+        }
     }
 
     /**
@@ -715,6 +842,10 @@ public class Log {
             return;
         }
         android.util.Log.wtf(Format.gatExtendedTag(obj), Format.getFormattedThrowable(message, tr));
+        if (!isCrashlyticsDisabled){
+            Crashlytics.log(android.util.Log.ASSERT,Format.gatExtendedTag(obj), Format.getFormattedMessage(message));
+            Crashlytics.logException(tr);
+        }
     }
 
     // =========================== Collections, arrays and objects ===============================

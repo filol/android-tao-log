@@ -1,3 +1,40 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
+
+buildscript {
+
+    ext.kotlin_version = '1.2.31'
+
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+        maven { url 'https://maven.fabric.io/public' }
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.1.1'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.0'
+        classpath 'com.archinamon:android-gradle-aspectj:3.2.0'
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+
+}
+
+allprojects {
+    repositories {
+        google()
+        jcenter()
+        mavenCentral()
+        maven { url 'https://maven.fabric.io/public' }
+    }
+}
+
+//task clean(type: Delete) {
+//    delete rootProject.buildDir
+//}
+
+
 apply plugin: 'com.android.library'
 apply plugin: 'com.archinamon.aspectj'
 
@@ -32,11 +69,15 @@ android {
 }
 
 final SUPPORT_LIBRARY_VERSION = '27.1.0'
+final KIT_VERSION_CRASHLYTICS = '2.9.1'
 
 dependencies {
     implementation "com.android.support:support-annotations:$SUPPORT_LIBRARY_VERSION"
     implementation "com.android.support:appcompat-v7:$SUPPORT_LIBRARY_VERSION"
     implementation "com.android.support:support-v4:$SUPPORT_LIBRARY_VERSION"
+    implementation("com.crashlytics.sdk.android:crashlytics:$KIT_VERSION_CRASHLYTICS@aar") {
+        transitive = true;
+    }
 }
 
 apply from: 'publish.gradle'

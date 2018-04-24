@@ -177,6 +177,10 @@ public class MainActivity extends AppCompatActivity {
         Log.xml(xml, 3);
 
         runFragmentStackLogger();
+
+        Log.d("LOG DE FRANCOIS");
+        Log.useCrashlytics(true);
+        Log.d("Test");
     }
 
     private void runFragmentStackLogger() {
